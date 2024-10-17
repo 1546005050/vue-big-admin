@@ -8,13 +8,13 @@ const baseURL = 'http://big-event-vue-api-t.itheima.net'
 const instance = axios.create({
   // TODO 1. 基础地址，超时时间
   baseURL,
-  timeout:10000
+  timeout:20000
 })
 // TODO请求拦截器
 instance.interceptors.request.use(
   (config) => {
     // TODO 2. 携带token
-    const useStore = useUserStore
+    const useStore = useUserStore()
     if(useStore.token){
         config.headers.Authorization = useStore.token
     }
