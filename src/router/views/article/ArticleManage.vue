@@ -4,8 +4,10 @@ import { Edit, Delete } from '@element-plus/icons-vue'
 import ChannelSelect from '@/router/views/article/components/ChannelSelect.vue'
 import { artgetListChannelservece } from '@/api/article'
 import { formatTime } from '@/utils/format'
+import ArticleEdit from './components/ArticleEdit.vue'
 const aticleList = ref([])//列表
 const total = ref(0)//总条数
+const loading = ref(false)
 
 // 定义请求参数对象
 const params = ref({
@@ -17,9 +19,11 @@ const params = ref({
 
 // 基于params获取文章列表
 const getArticleList = async () => {
+    loading.value = true
     const res = await artgetListChannelservece(params.value)
     aticleList.value = res.data.data
     total.value = res.data.total
+    loading.value = false
 }
 getArticleList()
 
@@ -36,7 +40,7 @@ const onCurrentChange = (page) => {
 
 
 const onEditArtick = (row) => {
-    console.log(row);
+    articleEditRef.value.open(row)
 
 }
 
@@ -46,14 +50,45 @@ const onDeleteArtick = (row) => {
 
 }
 
+const search = () => {
+    params.value.pagenum = 1
+    getArticleList()
+}
 
+const reset = () => {
+    params.value.pagenum = 1
+    params.value.cate_id = ''
+    params.value.state = ''
+    getArticleList()
+}
+
+const articleEditRef = ref()
+
+const addArticle = () => {
+    articleEditRef.value.open({})
+}
+// <!-- 添加编辑成功 -->
+const onSuccess = (type) => {
+    if (type === 'add') {
+        // 如果添加渲染最后一页
+        const lastPage = Math.ceil((total.value + 1) / params.value.pagesize)
+        params.value.pagenum = lastPage
+        //  更新成最大页码
+        getArticleList()
+    } else {
+        // 编辑渲染当前页
+        getArticleList()
+    }
+
+}
 </script>
+
 
 
 <template>
     <page-container title="文章管理">
         <template #extra>
-            <el-button type="primary">发布文章</el-button>
+            <el-button type="primary" @click="addArticle">发布文章</el-button>
         </template>
         <!-- 表单区域 -->
         <el-form inline>
@@ -69,13 +104,13 @@ const onDeleteArtick = (row) => {
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary">搜索</el-button>
-                <el-button>重置</el-button>
+                <el-button @click="search" type="primary">搜索</el-button>
+                <el-button @click="reset">重置</el-button>
             </el-form-item>
         </el-form>
 
         <!-- 表格区域 -->
-        <el-table :data="aticleList">
+        <el-table :data="aticleList" v-loading="loading">
             <el-table-column label="文章标题" prop="title">
                 <template #default="{ row }">
                     <el-link type="primary" :underline="false">{{ row.title }}</el-link>
@@ -96,10 +131,12 @@ const onDeleteArtick = (row) => {
                 </template>
             </el-table-column>
         </el-table>
-
+        <!-- 分页 -->
         <el-pagination v-model:current-page="params.pagenum" v-model:page-size="params.pagesize"
-            :page-sizes="[2, 5, 6, 8]" :size="size" :background="true" layout="jumper,total, sizes, prev, pager, next"
-            :total="total" @size-change="onSizeChange" @current-change="onCurrentChange"
+            :page-sizes="[2, 5, 6, 8]" :background="true" layout="jumper,total, sizes, prev, pager, next" :total="total"
+            @size-change="onSizeChange" @current-change="onCurrentChange"
             style="margin-top: 20px; justify-content: flex-end" />
+        <!-- 添加抽屉 -->
+        <article-edit @success="onSuccess" ref="articleEditRef"></article-edit>
     </page-container>
 </template>
