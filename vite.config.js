@@ -16,7 +16,7 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
-  base: './',
+  base: '/vue-big-admin/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -10,7 +10,8 @@
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
     "prepare": "husky install",
-    "link-staged": "lint-staged"
+    "link-staged": "lint-staged",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
