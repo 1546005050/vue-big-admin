@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory} from 'vue-router'
 import {useUserStore}from '@/stores/index'
 // createRouter用于创建实例
 // 配置history 模式
@@ -7,7 +7,7 @@ import {useUserStore}from '@/stores/index'
 
 // vite中的环境变量import.meta.env.BASE_URL 就是bite.config.js中的base配置项
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory()(import.meta.env.BASE_URL),
   routes: [
     {path:'/login',component:()=>import('./views/login/LoginPage.vue'),
       
